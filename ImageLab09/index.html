@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"> </script>
+     <script src="https://unpkg.com/aframe-environment-component/dist/aframe-environment-component.min.js"></script>
+  </head>
+  <body>
+    <a-scene>
+ <a-entity id="snowman" position="0 0 -4">
+      <!-- Bottom -->
+      <a-sphere id="bottom" radius="1.25" segments-width="32" segments-height="32" color="#FFFFFF"
+                position="0 1.25 0" shadow="cast: true"></a-sphere>
+
+            
+      <!-- Middle -->
+      <a-sphere id="middle" radius="0.9" segments-width="32" segments-height="32" color="#FFFFFF"
+                position="0 3.25 0" shadow="cast: true"></a-sphere>
+     <!-- Head (grouped so facial features align) -->
+      <a-entity id="head" position="0 4.6 0">
+        <a-sphere radius="0.6" segments-width="32" segments-height="32" color="#FFFFFF" shadow="cast: true"></a-sphere>
+
+        <!-- Eyes -->
+        <a-sphere id="left-eye" radius="0.1" segments-width="16" segments-height="16" color="#000000"
+                  position="-0.2 0.1 0.55"></a-sphere>
+        <a-sphere id="right-eye" radius="0.1" segments-width="16" segments-height="16" color="#000000"
+                  position="0.2 0.1 0.55"></a-sphere>
+
+        <! -- Mouth -->
+        <a-entity id="mouth" position="0 -0.2 0.55">
+          <a-sphere radius="0.06" segments-width="8" segments-height="8" color="#000000"
+                    position="-0.3 0 0"></a-sphere>
+          <a-sphere radius="0.06" segments-width="8" segments-height="8" color="#000000"
+                    position="-0.15 -0.1 0"></a-sphere>
+          <a-sphere radius="0.06" segments-width="8" segments-height="8" color="#000000"
+                    position="0  -0.15 0"></a-sphere>
+          <a-sphere radius="0.06" segments-width="8" segments-height="8" color="#000000"
+                    position="0.15 -0.1 0"></a-sphere>
+          <a-sphere radius="0.06" segments-width="8" segments-height="8" color="#000000"
+                    position="0.3 0 0"></a-sphere>
+        </a-entity> 
+    
+
+                  
+        <!-- Nose -->
+        <a-cone height="0.45" radius-bottom="0.12" radius-top="0.01" color="#FF8C00"
+                position="0.0 0.02 0.65" rotation="90 0 0" shadow="cast: true"></a-cone>
+      </a-entity>
+    
+      <!-- Buttons on middle -->
+      <a-sphere radius="0.07" color="#000000" position="0 3.45 0.78" shadow="cast: true"></a-sphere>
+      <a-sphere radius="0.07" color="#000000" position="0 3.05 0.85" shadow="cast: true"></a-sphere>
+      <a-sphere radius="0.07" color="#000000" position="0 2.65 0.92" shadow="cast: true"></a-sphere>
+
+      <!-- Arms -->
+      <a-cylinder color="#6B4C3B" radius="0.04" height="1.6" position="-1.05 3.25 0" rotation="0 0 -30" shadow="cast: true"></a-cylinder>
+      <a-cylinder color="#6B4C3B" radius="0.04" height="1.6" position="1.05 3.25 0" rotation="0 0 30" shadow="cast: true"></a-cylinder>
+
+      <!-- Hat: brim + top -->
+      <a-box color="#111111" depth="0.6" height="0.06" width="0.9" position="0 5.05 0.05" shadow="cast: true"></a-box>
+      <a-cylinder color="#111111" radius="0.35" height="0.6" position="0 5.35 0.05" shadow="cast: true"></a-cylinder>
+    </a-entity>
+
+
+      <!-- the enviroment entity includes a sky. Choose from the presets"none, default, contact, egypt, checkerboard, forest, goaland, yavapai, goldmine, threetowers, poison, arches, tron, japan, dream, volcano, starry, osiris, moon" -->
+      <a-entity environment="preset: japan; dressingAmount: 10"></a-entity>
+    </a-scene>
+
+    
+
+  </body>
+</html>
