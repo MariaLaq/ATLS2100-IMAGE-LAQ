@@ -1,15 +1,223 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"> </script>
+    <script src="https://aframe.io/releases/1.7.1/aframe.min.js"></script>
   </head>
   <body>
+
+    <a-assets>
+      <img id="SkyTexture" src="Assets/Galaxy.jpg">
+      <img id="starTexture" src="Assets/star.png">
+
+      <a-asset-item id="alien" src="Assets/alien/scene.gltf"></a-asset-item>
+      <a-asset-item id="ship" src="Assets/spaceship/scene.gltf"></a-asset-item>
+      <a-asset-item id="shroom" src="Assets/shroom/scene.gltf"></a-asset-item>
+    </a-assets>
+
     <a-scene>
-      <a-box position="-1 0.5 -3" rotation="0 45 0" color="#4CC3D9"></a-box>
-      <a-sphere position="0 1.25 -5" radius="1.25" color="#EF2D5E"></a-sphere>
-      <a-cylinder position="1 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="4" height="4" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
+      <a-sky src="#SkyTexture"></a-sky>
+
+      <!-- SPACESHIP GROUP (ship + thrusters + click-to-fly) -->
+      <a-entity id="shipGroup"
+                click-fly
+                position="4.5 2.5 10"
+                rotation="0 195 0"
+                scale="0.9 0.9 0.9">
+
+        <!-- Spaceship Model -->
+        <a-entity gltf-model="#ship"></a-entity>
+
+        <!-- Thruster Flame Cone 1 -->
+        <a-cone
+          id="thruster1"
+          position="0 -1 0"    
+          radius-bottom="0.30"
+          radius-top="0.01"
+          height="1"
+          rotation="0 0 0"
+          color="#ff9900"
+          material="emissive: #ff6600; emissiveIntensity: 2; opacity: 0.9; transparent: true;"
+          animation="property: scale; from: 1 1 1; to: 1 1.3 1; dur: 350; dir: alternate; loop: true"
+          animation__fade="property: material.opacity; from: 0.9; to: 0.4; dur: 350; dir: alternate; loop: true">
+        </a-cone>
+
+        <!-- Thruster Flame Cone 2 -->
+        <a-cone
+          id="thruster2"
+          position="0 -1.3 0"
+          radius-bottom="0.25"
+          radius-top="0.01"
+          height="1"
+          rotation="0 0 0"
+          color="#ffd966"
+          material="emissive: #ffaa00; emissiveIntensity: 3; opacity: 0.8; transparent: true;"
+          animation="property: scale; from: 1 1 1; to: 1 1.4 1; dur: 280; dir: alternate; loop: true"
+          animation__fade="property: material.opacity; from: 0.8; to: 0.3; dur: 280; dir: alternate; loop: true">
+        </a-cone>
+
+        <!-- Thruster Flame Cone 3 -->
+        <a-cone
+          id="thruster3"
+          position="0 -0.8 0"
+          radius-bottom="0.25"
+          radius-top="0.01"
+          height="1"
+          rotation="0 0 0"
+          color="#ffd966"
+          material="emissive: #ffaa00; emissiveIntensity: 3; opacity: 0.8; transparent: true;"
+          animation="property: scale; from: 1 1 1; to: 1 1.4 1; dur: 280; dir: alternate; loop: true"
+          animation__fade="property: material.opacity; from: 0.8; to: 0.3; dur: 280; dir: alternate; loop: true">
+        </a-cone>
+
+      </a-entity>
+
+      
+      <!-- ALIEN -->
+      <a-entity id="alien"
+                gltf-model="#alien"
+                position="-4 -2 0"
+                rotation="0 90 0"
+                scale="2 2 2"
+                material="emissive: #8C52FF; emissiveIntensity: 0.3"
+                biolume-response
+                confetti-shooter>
+      </a-entity>
+
+
+
+      <!-- CAMERA + GAZE CURSOR -->
+      <a-entity camera look-controls>
+        <a-cursor fuse="true" fuse-timeout="1000"
+                  material="color: white; shader: flat">
+        </a-cursor>
+      </a-entity>
+
+      <!-- INTERACTIVITY SCRIPT -->
+      <script>
+          AFRAME.registerComponent('click-fly', {
+            init: function () {
+              let el = this.el;
+              el.addEventListener('click', () => {
+                el.setAttribute('animation__rise', {
+                  property: 'position',
+                  to: `${el.object3D.position.x} ${el.object3D.position.y + 5} ${el.object3D.position.z}`,
+                  dur: 6000,
+                  easing: 'linear'
+                });
+              });
+            }
+          });
+        
+          /* ALIEN GLOW INTERACTION */
+        AFRAME.registerComponent('biolume-response', {
+          init: function () {
+            let el = this.el;
+
+            el.addEventListener('mouseenter', () => {
+              el.setAttribute('material', 'emissiveIntensity', 1);
+              el.setAttribute('animation__color', {
+                property: 'material.color',
+                to: '#FF4BF0',
+                dur: 800
+              });
+            });
+
+            el.addEventListener('mouseleave', () => {
+              el.setAttribute('material', 'emissiveIntensity', 0.3);
+              el.setAttribute('animation__color', {
+                property: 'material.color',
+                to: '#8C52FF',
+                dur: 800
+              });
+            });
+          }
+        });
+
+        /* ⭐ CONFETTI SHOOTER (STAR BURST) */
+        AFRAME.registerComponent('confetti-shooter', {
+            init: function () {
+              const el = this.el;
+
+              el.addEventListener('click', () => {
+
+                /* ✨ 1. MAKE ALIEN GLOW BRIGHTER WHEN CLICKED */
+                const mesh = el.getObject3D('mesh');
+                if (mesh) {
+                  mesh.traverse(node => {
+                    if (node.isMesh && node.material) {
+                      // burst glow
+                      node.material.emissiveIntensity = 1.5;
+                      node.material.emissive = new THREE.Color('#FF4BF0');
+                    }
+                  });
+
+                  // gently fade back after 500 ms
+                  setTimeout(() => {
+                    mesh.traverse(node => {
+                      if (node.isMesh && node.material) {
+                        node.material.emissiveIntensity = 0.3;
+                        node.material.emissive = new THREE.Color('#8C52FF');
+                      }
+                    });
+                  }, 500);
+                }
+
+                /* ⭐ 2. STAR CONFETTI BURST */
+                for (let i = 0; i < 25; i++) {
+                  const star = document.createElement('a-entity');
+
+                  let dx = (Math.random() - 0.5) * 5;
+                  let dy = Math.random() * 4 + 1.2;
+                  let dz = (Math.random() - 0.5) * 5;
+
+                  star.setAttribute('geometry', {
+                    primitive: 'plane',
+                    width: 0.5,
+                    height: 0.5
+                  });
+
+                  star.setAttribute('material', {
+                    src: '#starTexture',
+                    transparent: true,
+                    side: 'double'
+                  });
+
+                  star.setAttribute('position', el.getAttribute('position'));
+
+                  star.setAttribute('animation__move', {
+                    property: 'position',
+                    to: `${dx} ${dy} ${dz}`,
+                    dur: 1200,
+                    easing: 'easeOutQuad'
+                  });
+
+                  star.setAttribute('animation__spin', {
+                    property: 'rotation',
+                    to: `0 0 ${Math.random() * 720}`,
+                    dur: 1200,
+                    easing: 'linear'
+                  });
+
+                  star.setAttribute('animation__fade', {
+                    property: 'material.opacity',
+                    from: 1,
+                    to: 0,
+                    dur: 1200,
+                    easing: 'linear'
+                  });
+
+                  star.addEventListener('animationcomplete__fade', () => {
+                    star.remove();
+                  });
+
+                  el.sceneEl.appendChild(star);
+                }
+              });
+            }
+          });
+      </script>
+
     </a-scene>
+
   </body>
 </html>
